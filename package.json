@@ -1,0 +1,13 @@
+{
+  "name": "webscrap-scroll-ocr",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "extract": "node src/extract-scroll-site.js"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2",
+    "tesseract.js": "^6.0.1"
+  }
+}
