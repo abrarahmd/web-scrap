@@ -33,6 +33,7 @@ Optional flags:
 --goto-wait-until=domcontentloaded
 --goto-timeout=120000
 --lang=eng
+--screenshots=5
 --max-sections=0
 --capture-mode=document
 --profile-dir=./profiles/default
@@ -47,6 +48,7 @@ Optional flags:
 Notes:
 
 - `overlap` helps avoid cutting text between screenshots.
+- `screenshots=X` captures at most X screenshots in either `document` or `feed` mode.
 - `max-sections=0` means no limit.
 - `goto-wait-until` controls Playwright's page load condition. `domcontentloaded` is the safest default for modern sites.
 - `goto-timeout` controls how long the initial page navigation can take.
@@ -95,3 +97,13 @@ For sites that keep background network requests alive, prefer:
 ```bash
 npm run extract -- --url="https://openai.com/research/index/" --capture-mode=document --goto-wait-until=domcontentloaded --wait=2000
 ```
+
+## Limit screenshot count
+
+To capture only a fixed number of scroll sections, use `--screenshots=X`:
+
+```bash
+npm run extract -- --url="https://example.com" --screenshots=5
+```
+
+This stops after at most 5 screenshots, even if the page is very long or keeps loading more content.

@@ -13,6 +13,7 @@ function parseArgs(argv) {
     gotoWaitUntil: "domcontentloaded",
     gotoTimeout: 120000,
     lang: "eng",
+    screenshots: 0,
     maxSections: 0,
     url: "",
     profileDir: "",
@@ -42,6 +43,7 @@ function parseArgs(argv) {
           "overlap",
           "wait",
           "gotoTimeout",
+          "screenshots",
           "maxSections",
           "maxScrolls",
           "startAt",
@@ -65,6 +67,10 @@ function parseArgs(argv) {
 
   if (defaults.overlap < 0 || defaults.overlap >= defaults.height) {
     throw new Error("Overlap must be >= 0 and smaller than viewport height.");
+  }
+
+  if (!Number.isInteger(defaults.screenshots) || defaults.screenshots < 0) {
+    throw new Error("screenshots must be a whole number >= 0.");
   }
 
   if (!["document", "feed"].includes(defaults.captureMode)) {
@@ -175,10 +181,12 @@ async function preloadDocumentScroll(page, options, positions) {
 function collectDocumentPositions(metrics, options) {
   const positions = [];
   const step = options.height - options.overlap;
+  const maxScreenshots =
+    options.screenshots > 0 ? options.screenshots : options.maxSections;
 
   for (let y = Math.max(0, options.startAt); y < metrics.fullHeight; y += step) {
     positions.push(y);
-    if (options.maxSections > 0 && positions.length >= options.maxSections) {
+    if (maxScreenshots > 0 && positions.length >= maxScreenshots) {
       break;
     }
   }
@@ -189,11 +197,13 @@ function collectDocumentPositions(metrics, options) {
 async function collectFeedPositions(page, options) {
   const step = options.height - options.overlap;
   const positions = [];
+  const maxScreenshots =
+    options.screenshots > 0 ? options.screenshots : options.maxScrolls;
   let scrollY = Math.max(0, options.startAt);
   let previousHeight = -1;
   let stablePasses = 0;
 
-  while (positions.length < options.maxScrolls && stablePasses < 3) {
+  while (positions.length < maxScreenshots && stablePasses < 3) {
     const metrics = await getPageMetrics(page);
     const boundedY = Math.min(scrollY, Math.max(0, metrics.fullHeight - 1));
 
